@@ -44,10 +44,13 @@ public func FPL_GetLockedPLForAffiliation(id: TweakDBID) -> Int32 {
 
 public func FPL_GetCyberpsychoPLForRecord(id: TweakDBID) -> Int32 {
   switch id {
-    // Zaria — Bloody Ritual
-    case t"Character.ma_wat_nid_15_psycho": return 40;
-    case t"Character.ma_wat_nid_15_psycho_02": return 45;
+    case t"Character.ma_wat_nid_15_psycho": return 50;
+    case t"Character.ma_wat_nid_15_psycho_02": return 50;
     case t"Character.ma_wat_nid_15_psycho_03": return 50;
+
+    case t"Character.ma_bls_ina_se1_22_psycho": return 50;
+    case t"Character.ma_pac_cvi_08_psycho": return 35;
+    case t"Character.q001_hologram_psycho": return 15;
 
     case t"Character.ma_bls_ina_se1_07_cyberpsycho_1": return 50;
     case t"Character.ma_bls_ina_se1_08_cyberpsycho": return 50;
@@ -68,10 +71,21 @@ public func FPL_GetCyberpsychoPLForRecord(id: TweakDBID) -> Int32 {
   return -1;
 }
 
+public func FPL_IsMainQuest(recID: TweakDBID) -> Bool {
+  let cr: ref<Character_Record> = TweakDBInterface.GetCharacterRecord(recID);
+  if !IsDefined(cr) { return false; }
+  let qa: wref<NPCQuestAffiliation_Record> = cr.Quest();
+  if !IsDefined(qa) { return false; }
+  return qa.GetID() == t"NPCQuestAffiliation.MainQuest";
+}
+
 public func FPL_GetLockedPLForPuppet(p: wref<ScriptedPuppet>) -> Int32 {
   if !IsDefined(p) || p.IsPlayer() { return -1; }
 
   let recID: TweakDBID = p.GetRecordID();
+
+  if FPL_IsMainQuest(recID) { return -1; }
+
   let cyPL: Int32 = FPL_GetCyberpsychoPLForRecord(recID);
   if cyPL > 0 { return cyPL; }
 
